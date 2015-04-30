@@ -10,13 +10,13 @@ The preferred way to install this extension is through [composer](http://getcomp
 Either run
 
 ```
-php composer.phar require --prefer-dist helicon-os/yii2-hcdoctrine "*"
+php composer.phar require --prefer-dist helicon-os/yii2-hy-doctrine "*"
 ```
 
 or add
 
 ```
-"helicon-os/yii2-hcdoctrine": "*"
+"helicon-os/yii2-hcy-doctrine": "*"
 ```
 
 to the require section of your `composer.json` file.
