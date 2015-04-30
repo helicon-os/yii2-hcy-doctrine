@@ -1,0 +1,21 @@
+{
+    "name": "helicon-os/yii2-hcdoctrine",
+    "description": "Doctrine for Yii2",
+    "type": "yii2-extension",
+    "keywords": ["yii2","extension"],
+    "license": "LGPL",
+    "authors": [
+        {
+            "name": "Andreas Prucha, Helicon Software Development",
+            "email": "helicon@helicon.co.at"
+        }
+    ],
+    "require": {
+        "yiisoft/yii2": "*"
+    },
+    "autoload": {
+        "psr-4": {
+            "helicon\\hcyii2\\doctrine\\orm\\": "lib"
+        }
+    }
+}
