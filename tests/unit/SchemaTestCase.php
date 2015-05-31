@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace helicon\hcyii2\tests\doctrine\orm\unit;
+namespace helicon\hcy\tests\doctrine\orm\unit;
 
 /**
  * Description of ComponentTestCase

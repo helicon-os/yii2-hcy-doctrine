@@ -26,7 +26,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace helicon\hcyii2\doctrine\orm\doctrine\loggers;
+namespace helicon\hcy\doctrine\orm\doctrine\loggers;
 
 /**
  * Doctrine SQL Logger to Yii Logger Bridge

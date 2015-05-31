@@ -1,6 +1,6 @@
 <?php
 
-namespace helicon\hcyii2\doctrine\orm;
+namespace helicon\hcy\doctrine\orm;
 
 use \Yii;
 
@@ -322,7 +322,7 @@ class DoctrineDb extends \yii\base\Component
      * @param type $aConfigArray
      * @param array $validators
      * @param type $allowNull
-     * @throws \helicon\hcyii2\doctrine\Exception
+     * @throws \helicon\hcy\doctrine\Exception
      */
     protected function checkConfig($aConfigPath, $aConfigArray, array $validators)
     {
@@ -639,7 +639,7 @@ class DoctrineDb extends \yii\base\Component
                 }
             case 'chain': {
                     if (!isset($aConfig['mappings'])) {
-                        throw new \helicon\hcyii2\doctrine\Exception(
+                        throw new \helicon\hcy\doctrine\Exception(
                         \Yii::t('yii2-hcy-doctrine', 'Item \'mappings\' not specified for chain-mapping {$aId}', ['{$aId}' => $aIdHint]));
                     }
 
@@ -711,8 +711,8 @@ class DoctrineDb extends \yii\base\Component
                     break;
                 }
             case 'yii':;
-            case '\helicon\hcyii2\doctrine\orm\doctrine\loggers\YiiSqlLogger': {
-                    $result = new \helicon\hcyii2\doctrine\orm\doctrine\loggers\YiiSqlLogger();
+            case '\helicon\hcy\doctrine\orm\doctrine\loggers\YiiSqlLogger': {
+                    $result = new \helicon\hcy\doctrine\orm\doctrine\loggers\YiiSqlLogger();
                     self::setObjectProperties($result, $aLoggerConfig, ['class']);
                     break;
                 }
@@ -927,7 +927,7 @@ class DoctrineDb extends \yii\base\Component
         //
     
     if (!isset($this->connections[$aId])) {
-            throw new \helicon\hcyii2\doctrine\Exception(
+            throw new \helicon\hcy\doctrine\Exception(
             \Yii::t('yii2-hcy-doctrine', 'Connection {id} is not configured', ['{id}' => $aId]));
         }
 

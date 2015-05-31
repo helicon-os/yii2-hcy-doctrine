@@ -6,7 +6,7 @@
  * and open the template in the editor.
  */
 
-namespace helicon\hcyii2\doctrine\orm;
+namespace helicon\hcy\doctrine\orm;
 
 /**
  * Description of Exception

@@ -26,14 +26,14 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
-namespace helicon\hcyii2\tests\doctrine\orm\unit;
+namespace helicon\hcy\tests\doctrine\orm\unit;
 
 /**
  * Description of DoctrineComponentTest
  *
  * @author Andreas Prucha, Helicon Software Development
  */
-class AbstractTestCase extends \helicon\hcyii2\phpunit\TestCase
+class AbstractTestCase extends \helicon\hcy\phpunit\TestCase
 {
     protected function setUp()
     {
@@ -74,7 +74,7 @@ class AbstractTestCase extends \helicon\hcyii2\phpunit\TestCase
     /**
      * Helper function returning <code>$this->app->dc</code>
      * 
-     * @return \helicon\hcyii2\doctrine\orm\DoctrineDb
+     * @return \helicon\hcy\doctrine\orm\DoctrineDb
      */
     protected function getAppDc()
     {
