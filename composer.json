@@ -1,22 +1,36 @@
 {
-    "name": "helicon-os/yii2-hcdoctrine",
-    "description": "Doctrine for Yii2",
-    "type": "yii2-extension",
-    "keywords": ["yii2","extension"],
-    "license": "LGPL",
-    "authors": [
-        {
-            "name": "Andreas Prucha, Helicon Software Development",
-            "email": "helicon@helicon.co.at"
-        }
-    ],
-    "require": {
-        "yiisoft/yii2": "*",
-        "doctrine/orm": "*"
-    },
-    "autoload": {
-        "psr-4": {
-            "helicon\\hcyii2\\doctrine\\orm\\": "lib"
-        }
+  "name": "helicon-os/yii2-hcdoctrine",
+  "description": "Doctrine for Yii2",
+  "type": "yii2-extension",
+  "keywords": ["yii2", "extension"],
+  "license": "LGPL",
+  "authors": [
+    {
+      "name": "Andreas Prucha, Helicon Software Development",
+      "email": "helicon@helicon.co.at"
     }
+  ],
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/helicon-os/yii2-hcy-phpunit.git"
+    }
+  ],
+  "require": {
+    "yiisoft/yii2": "*",
+    "doctrine/orm": "*"
+  },
+  "require-dev": {
+    "helicon-os/yii2-hcy-phpunit": "*@dev"
+  },
+  "autoload": {
+    "psr-4": {
+      "helicon\\hcyii2\\doctrine\\orm\\": "lib"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "helicon\\hcyii2\\tests\\doctrine\\orm\\": "tests"
+    }
+  }
 }

@@ -2,6 +2,8 @@
 
 namespace helicon\hcyii2\doctrine\orm;
 
+use \Yii;
+
 /**
  * 
  * @property    array   $types    Array of custom Doctrine Types to register. See {@link setTypes()} for details.
@@ -29,9 +31,9 @@ class DoctrineDb extends \yii\base\Component
      * Each configuration may contain the following items:
      * 
      * <ul>
-     *   <li>'proxyDir': * string = '(a)runtime/doctrine/proxies': Directory where proxies are generated. Yii-Aliases are allowed</li>
-     *   <li>'proxyNamespace': * string = 'runtime\\doctrine\\proxies': Namespace </li>
-     *   <li>'autoGenerateProxyClasses': Generate proxy classes automatically (Default: true);</li>
+     *   <li>'proxyDir': * string = '(a)runtime/doctrine/proxies'  Directory where proxies are generated. Yii-Aliases are allowed</li>
+     *   <li>'proxyNamespace': * string = '__yii2hcydoctrine__proxies': Namespace </li>
+     *   <li>'autoGenerateProxyClasses': bool = true: Generate proxy classes automatically;</li>
      *   <li>'metadataCache': string = {@link $defaultCache}: Id of the cache defined in $caches</li>
      *   <li>'resultCache': string = {@link $defaultCache}: Id of the cache defined in $caches</li>
      *   <li>'queryCache': string = {@link $defaultCache}: Id of the cache defined in $caches</li>
@@ -42,7 +44,7 @@ class DoctrineDb extends \yii\base\Component
      *        <li>'class': * string: Class name of the user defined function</li>
      *      </ul>
      *   </li>
-     *   <li>'mappings': *
+     *   <li>'metadataDriver': *
      *    Each entry may contain the following items:
      *    <ul>
      *      <li>'type': * string = 'simpleAnnotation'
@@ -56,7 +58,7 @@ class DoctrineDb extends \yii\base\Component
      *      </li>
      *      <li>
      *        'path': ? array|string: Directory or directories used for this mapping. Yii-Aliases are resolved.
-     *        This property is used for xml and yaml.    
+     *        This property is used for xml, yaml, annotation and simpleAnnotation.    
      *      </li>  
      *      <li>
      *        'mappings': ? array: Array of mappings. Required if type is 'chain'. Important: Use the namespace as key.
@@ -105,6 +107,8 @@ class DoctrineDb extends \yii\base\Component
      *    <li>'params': * Array of parameters passed to {@link \Doctrine\DBAL\DriverManager::getConnection()}
      *        Common parameters are:
      *      <ul>
+     *        <li>'driver': string: Name of the driver, e.g. 'pdo_mysql'. Use this, if 'driverClass' is not specified.</li>
+     *        <li>'driverClass': string: Class name of the driver. Use this, if 'driver' is not specified.</li>
      *        <li>'dbname': Name of the db</li>
      *        <li>'host': Host</li>
      *        <li>'user': Username</li>
@@ -265,22 +269,16 @@ class DoctrineDb extends \yii\base\Component
     {
         return \array_key_exists($aKey, $aArray) ? $aArray[$aKey] : $aDefault;
     }
-    
+
     public static function setObjectProperties($aObject, array $aPropertyArray = [], array $aExcludeList = [])
     {
-        foreach ($aPropertyArray as $p => $v)
-        {
-            if (!in_array($p, $aExcludeList))
-            {
-                if (property_exists($aObject, $p))
-                {
+        foreach ($aPropertyArray as $p => $v) {
+            if (!in_array($p, $aExcludeList)) {
+                if (property_exists($aObject, $p)) {
                     $aObject->$p = $v;
-                }
-                else
-                {
-                    $setter = 'set'.ucfirst($p);
-                    if (method_exists($aObject, $setter))
-                    {
+                } else {
+                    $setter = 'set' . ucfirst($p);
+                    if (method_exists($aObject, $setter)) {
                         $aObject->$setter($v);
                     }
                 }
@@ -331,12 +329,8 @@ class DoctrineDb extends \yii\base\Component
         foreach ($validators as $k => $rules) {
             if (!\array_key_exists($k, $aConfigArray)) {
                 if (isset($rules['required']) && $rules['required']) {
-                    if (isset($rules['requiredHint'])) {
-                        throw Exception::newConfigPropertyMissingError([
-                            'idHint' => $aConfigPath,
-                            'id' => $k,
-                            'validation' => $validators[$k]]);
-                    }
+                    $error = 'Missing proprety ' . $k . ' in ' . $aConfigPath . (isset($rules['requiredHint']) ? ': ' . $rules['requiredHint'] : '');
+                    throw new Exception($error);
                 }
             } else {
                 if (isset($rules['type'])) {
@@ -688,53 +682,45 @@ class DoctrineDb extends \yii\base\Component
 
         return $result;
     }
-    
+
     protected function newSqlLoggerObject($aLoggerConfig, $aConfigIdHint = '?')
     {
-        
+
         if (empty($aLoggerConfig))
             return null;
-        
-        $this->checkConfig($aConfigIdHint, $aLoggerConfig, 
-        [
+
+        $this->checkConfig($aConfigIdHint, $aLoggerConfig, [
             'class' => ['required' => true, 'type' => 'string'],
         ]);
-        switch ($aLoggerConfig['class'])
-        {
+        switch ($aLoggerConfig['class']) {
             case 'chain':;
-            case '\Doctrine\DBAL\Logging\LoggerChain':
-            {
-                $this->checkConfig($aConfigIdHint, $aLoggerConfig, 
-                [
-                    'loggers' => ['required' => true, 'type' => 'array'],
-                ]);
-                $result = new \Doctrine\DBAL\Logging\LoggerChain();
-                foreach ($aLoggerConfig['loggers'] as $i => $subLoggerConfig)
-                {
-                    $subLogger = $this->newSqlLoggerObject($subLoggerConfig, $aConfigIdHint.'.sqlLoggers.'.$i);
-                    $result->addLogger($subLogger);
+            case '\Doctrine\DBAL\Logging\LoggerChain': {
+                    $this->checkConfig($aConfigIdHint, $aLoggerConfig, [
+                        'loggers' => ['required' => true, 'type' => 'array'],
+                    ]);
+                    $result = new \Doctrine\DBAL\Logging\LoggerChain();
+                    foreach ($aLoggerConfig['loggers'] as $i => $subLoggerConfig) {
+                        $subLogger = $this->newSqlLoggerObject($subLoggerConfig, $aConfigIdHint . '.sqlLoggers.' . $i);
+                        $result->addLogger($subLogger);
+                    }
+                    break;
                 }
-                break;
-            }
             case 'echo':;
-            case '\Doctrine\DBAL\Logging\EchoSQLLogger':
-            {
-                $result = new \Doctrine\DBAL\Logging\EchoSQLLogger();
-                break;
-            }
+            case '\Doctrine\DBAL\Logging\EchoSQLLogger': {
+                    $result = new \Doctrine\DBAL\Logging\EchoSQLLogger();
+                    break;
+                }
             case 'yii':;
-            case '\helicon\hcyii2\doctrine\orm\doctrine\loggers\YiiSqlLogger': 
-            {
-                $result = new \helicon\hcyii2\doctrine\orm\doctrine\loggers\YiiSqlLogger();
-                self::setObjectProperties($result, $aLoggerConfig, ['class']);
-                break;
-            }
-            default:
-            {
-                $result = new $aLoggerConfig['class']();
-                self::setObjectProperties($result, $aLoggerConfig, ['class']);
-                break;
-            }
+            case '\helicon\hcyii2\doctrine\orm\doctrine\loggers\YiiSqlLogger': {
+                    $result = new \helicon\hcyii2\doctrine\orm\doctrine\loggers\YiiSqlLogger();
+                    self::setObjectProperties($result, $aLoggerConfig, ['class']);
+                    break;
+                }
+            default: {
+                    $result = new $aLoggerConfig['class']();
+                    self::setObjectProperties($result, $aLoggerConfig, ['class']);
+                    break;
+                }
         }
     }
 
@@ -749,11 +735,10 @@ class DoctrineDb extends \yii\base\Component
         // Configuration obviously does not exist - Create it
         //
         
-        $this->checkConfig($aConfigIdHint, $aConfiguration, 
-        [
+        $this->checkConfig($aConfigIdHint, $aConfiguration, [
             'customFunctions' => ['required' => false, 'type' => 'array'],
         ]);
-    
+
         // Create working copy of config array and manipulate entries where necessary
 
         $c = array_merge(
@@ -780,13 +765,12 @@ class DoctrineDb extends \yii\base\Component
         if (isset($c['namingConvention'])) {
             $c['resultCacheImpl'] = $this->initOrGetCacheInstance($c['resultCache']);
         }
-        
-        if (isset($c['sqlLogger']))
-        {
+
+        if (isset($c['sqlLogger'])) {
             $c['sqlLogger'] = $this->newSqlLoggerObject($c['sqlLogger']);
         }
-        
-        $customFunctions = (isset($c['customFunctions'])) ? $c['customFunctions'] : []; 
+
+        $customFunctions = (isset($c['customFunctions'])) ? $c['customFunctions'] : [];
         unset($c['customFunctions']);
 
         $result = new \Doctrine\ORM\Configuration();
@@ -801,31 +785,24 @@ class DoctrineDb extends \yii\base\Component
             $result->$setter($cv);
         }
 
-        if (!empty($customFunctions))
-        {
-            foreach ($customFunctions as $fn => $fd)
-            {
-                switch(strtolower(isset($fd['type']) ? $fd['type'] : '?'))
-                {
-                    case 'string':
-                    {
-                        $result->addCustomStringFunction($fn, $fd['class']);
-                        break;
-                    }
-                    case 'numeric':
-                    {
-                        $result->addCustomNumericFunction($fn, $fd['class']);
-                        break;
-                    }
-                    case 'datetime':
-                    {
-                        $result->addCustomDatetimeFunction($fn, $fd['class']);
-                        break;
-                    }
-                    default:
-                    {
-                        throw new Exception('customFunction type not set or unknown: '.$fd['type']);
-                    }
+        if (!empty($customFunctions)) {
+            foreach ($customFunctions as $fn => $fd) {
+                switch (strtolower(isset($fd['type']) ? $fd['type'] : '?')) {
+                    case 'string': {
+                            $result->addCustomStringFunction($fn, $fd['class']);
+                            break;
+                        }
+                    case 'numeric': {
+                            $result->addCustomNumericFunction($fn, $fd['class']);
+                            break;
+                        }
+                    case 'datetime': {
+                            $result->addCustomDatetimeFunction($fn, $fd['class']);
+                            break;
+                        }
+                    default: {
+                            throw new Exception('customFunction type not set or unknown: ' . $fd['type']);
+                        }
                 }
             }
         }
@@ -909,7 +886,7 @@ class DoctrineDb extends \yii\base\Component
      */
     protected function newDbalConnectionObject($aId, $aConnectionConfig)
     {
-        $this->checkConfig('connections.' . $aId, $aConnectionConfig, ['type' => ['required' => true],
+        $this->checkConfig('connections.' . $aId, $aConnectionConfig, [
             'params' => ['required' => true]]);
 
         $dbalConfig = $this->getDbalConfigurationObject(self::getArrayValue('dbalConfiguration', $aConnectionConfig, $this->defaultDbalConfiguration));
