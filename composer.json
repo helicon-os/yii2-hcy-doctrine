@@ -1,5 +1,5 @@
 {
-  "name": "helicon-os/yii2-hcdoctrine",
+  "name": "helicon-os/yii2-hcy-doctrine",
   "description": "Doctrine for Yii2",
   "type": "yii2-extension",
   "keywords": ["yii2", "extension"],
