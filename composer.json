@@ -32,13 +32,5 @@
     "psr-4": {
       "helicon\\hcy\\tests\\doctrine\\orm\\": "tests"
     }
-  },
-  "scripts": {
-    "post-install-cmd": [
-      "ComposerScript::postInstallOrUpdate"
-    ],
-    "post-update-cmd": [
-      "ComposerScript::postInstallOrUpdate"
-    ]
   }
 }
