@@ -337,8 +337,11 @@ class DoctrineDb extends \yii\base\Component
                     $itemType = \strtolower(gettype($aConfigArray[$k]));
                     if ((\strpos(\strtolower($rules['type']), $itemType) === false) &&
                             (\strpos(\strtolower($rules['type']), 'mixed') === false)) {
-                        throw Exception::newConfigPropertyWrongTypeError(
-                                $aConfigPath, $k, $itemType, $validators[$k]);
+                        throw Exception::newError('Doctrine config entry {id} has type {foundType}, but {expectedType} expected',
+                                array('id' => $aConfigPath.'.'.$k,
+                                    'foundType' => $itemType,
+                                    'expectedType' => $rules['type']
+                                ));
                     }
                 }
             }

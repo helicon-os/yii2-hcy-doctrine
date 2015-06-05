@@ -25,12 +25,20 @@
   },
   "autoload": {
     "psr-4": {
-      "helicon\\hcyii2\\doctrine\\orm\\": "lib"
+      "helicon\\hcy\\doctrine\\orm\\": "lib"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "helicon\\hcyii2\\tests\\doctrine\\orm\\": "tests"
+      "helicon\\hcy\\tests\\doctrine\\orm\\": "tests"
     }
+  },
+  "scripts": {
+    "post-install-cmd": [
+      "ComposerScript::postInstallOrUpdate"
+    ],
+    "post-update-cmd": [
+      "ComposerScript::postInstallOrUpdate"
+    ]
   }
 }

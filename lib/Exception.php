@@ -15,33 +15,18 @@ namespace helicon\hcy\doctrine\orm;
  */
 class Exception extends \yii\base\Exception
 {
-  
-  public static function newGeneralConfigValidationError($aError, $validationConfig = [])
+    
+  public static function newError($message, array $params = array(), $code = null, $previous = null)
   {
-    $validationConfig = array_merge([
-      'description' => null,
-      'types' => 'mixed',
-      'required' => false
-    ]);
-    $aValueList = \array_merge_recursive($aValueList, [
-      'idHint' => null,
-      'id' => '?',
-      'validation' => []
-      ]
-    );
-    return new self('Doctrine Configuration error: '.
-                    $aError.
-                    \json_encode($aValueList));
-  }
-  
-  public static function newConfigPropertyMissingError(array $values = [])
-  {
-    return new Exception (\Yii::t('yii2-hcy-doctrine', 'Doctrine configuration error: Configuration propery missing'));
-  }
-  
-  public static function newConfigPropertyWrongTypeError($aConfigIdHint, $aId, $aFoundType, $aValidation)
-  {
-    return new Exception (\Yii::t('yii2-hcy-doctrine', 'Doctrine configuration error: Configuration propery missing'));
+      if (count($params) > 0) {
+            $p = [];
+            foreach ((array) $params as $name => $value) {
+                $p['{' . $name . '}'] = $value;
+            }
+            $message = strtr($message, $p);
+      }
+      
+      return new Exception($message, $code, $previous);
   }
   
 }
