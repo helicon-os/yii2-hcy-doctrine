@@ -249,6 +249,12 @@ class DoctrineDb extends \yii\base\Component
      * @see configureMessageSource()
      */
     public $messageTranslationSource = null;
+    
+    /**
+     * @var bool    Initialize Entity-Managers automatically at startup. This is usually not necessary
+     *              because Entity-Managers are initialized at access.
+     */
+    public $autoInitEm = false;
 
     /**
      * @var array Array of Doctrine types to register
@@ -312,6 +318,12 @@ class DoctrineDb extends \yii\base\Component
 
         if ($this->autoValidateMappings) {
             $this->validateMappings('*', true);
+        }
+        
+        if ($this->autoInitEm) {
+          foreach ($this->entityManagers as $k => $v) {
+              $this->getEm($k);
+          }
         }
     }
 
